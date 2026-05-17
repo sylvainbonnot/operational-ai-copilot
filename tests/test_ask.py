@@ -6,7 +6,7 @@ import pytest
 from httpx import ASGITransport, AsyncClient
 
 from app.main import app
-from app.models.api import RetrievalMetadata, SourceChunk
+from app.models.api import SourceChunk
 
 
 def _make_chunk(source_id: str = "INC-0001") -> SourceChunk:

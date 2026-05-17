@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 
 from app.agents.intent import IntentType, classify_intent
 from app.agents.tools import (

@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from unittest.mock import AsyncMock, MagicMock, patch
+from unittest.mock import AsyncMock, patch
 
 import pytest
 from httpx import ASGITransport, AsyncClient
@@ -8,7 +8,6 @@ from httpx import ASGITransport, AsyncClient
 from app.agents.intent import classify_intent
 from app.main import app
 from app.models.api import SourceChunk
-
 
 # ── Intent classifier ─────────────────────────────────────────────────────────
 

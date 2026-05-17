@@ -6,7 +6,7 @@ from typing import Any
 
 from app.core.logging import get_logger
 from app.core.telemetry import agent_tool_calls_total
-from app.models.api import AskRequest, SourceChunk
+from app.models.api import SourceChunk
 from app.storage.vector_store import similarity_search
 
 logger = get_logger(__name__)
