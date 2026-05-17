@@ -22,25 +22,22 @@ def _make_chunk(source_id: str = "INC-0001") -> SourceChunk:
 
 @pytest.mark.asyncio
 async def test_ask_returns_answer() -> None:
-    mock_chunks = [_make_chunk("INC-0001"), _make_chunk("INC-0002")]
+    from app.agents.graph import AgentResult
 
-    with (
-        patch("app.api.routes_ask.retrieve", new_callable=AsyncMock, return_value=mock_chunks),
-        patch(
-            "app.api.routes_ask.generate_answer",
-            new_callable=AsyncMock,
-            return_value=type(
-                "R",
-                (),
-                {
-                    "answer": "Bearing wear was caused by lubrication failure (INC-0001, INC-0002).",
-                    "prompt_tokens": 200,
-                    "completion_tokens": 50,
-                    "latency_ms": 800.0,
-                },
-            )(),
-        ),
-    ):
+    mock_chunks = [_make_chunk("INC-0001"), _make_chunk("INC-0002")]
+    mock_result = AgentResult(
+        answer="Bearing wear was caused by lubrication failure (INC-0001, INC-0002).",
+        sources=mock_chunks,
+        intent="diagnosis",
+        tool_calls=["retrieve_incidents", "retrieve_manuals"],
+        grounded=True,
+        confidence=0.75,
+        prompt_tokens=200,
+        completion_tokens=50,
+        latency_ms=800.0,
+    )
+
+    with patch("app.api.routes_ask.run_agent", new_callable=AsyncMock, return_value=mock_result):
         async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
             response = await client.post(
                 "/ask",
@@ -53,12 +50,22 @@ async def test_ask_returns_answer() -> None:
     assert data["grounded"] is True
     assert len(data["sources"]) == 2
     assert "answer_id" in data
-    assert data["retrieval_metadata"]["top_k"] == 5
 
 
 @pytest.mark.asyncio
 async def test_ask_no_chunks_returns_refusal() -> None:
-    with patch("app.api.routes_ask.retrieve", new_callable=AsyncMock, return_value=[]):
+    from app.agents.graph import AgentResult
+
+    mock_result = AgentResult(
+        answer="I don't have enough information to answer this question.",
+        sources=[],
+        intent="unknown",
+        tool_calls=[],
+        grounded=True,
+        confidence=0.0,
+    )
+
+    with patch("app.api.routes_ask.run_agent", new_callable=AsyncMock, return_value=mock_result):
         async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
             response = await client.post(
                 "/ask",
