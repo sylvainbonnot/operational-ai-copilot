@@ -1,0 +1,42 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+.mypy_cache/
+.ruff_cache/
+.pytest_cache/
+htmlcov/
+.coverage
+*.egg-info/
+dist/
+build/
+
+# uv
+.venv/
+uv.lock
+
+# Env
+.env
+.env.local
+
+# Data (keep structure, ignore generated content)
+data/synthetic/*.json
+data/synthetic/*.jsonl
+data/synthetic/*.csv
+data/timeseries/*.csv
+data/timeseries/*.parquet
+
+# Eval reports (keep dir, ignore generated reports)
+eval/reports/*.json
+eval/reports/*.md
+
+# Docker
+.docker/
+
+# macOS
+.DS_Store
+
+# IDE
+.idea/
+.vscode/
+*.swp

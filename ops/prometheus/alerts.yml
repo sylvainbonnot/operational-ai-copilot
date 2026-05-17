@@ -1,0 +1,38 @@
+groups:
+  - name: copilot_alerts
+    rules:
+      - alert: HighErrorRate
+        expr: |
+          rate(rag_request_total{status="error"}[5m])
+          / rate(rag_request_total[5m]) > 0.1
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High RAG error rate ({{ $value | humanizePercentage }})"
+
+      - alert: HighP95Latency
+        expr: |
+          histogram_quantile(0.95, rate(rag_latency_seconds_bucket[5m])) > 10
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "p95 RAG latency above 10s ({{ $value | humanizeDuration }})"
+
+      - alert: LLMHighLatency
+        expr: |
+          histogram_quantile(0.95, rate(llm_latency_seconds_bucket[5m])) > 30
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "p95 LLM latency above 30s ({{ $value | humanizeDuration }})"
+
+      - alert: LowGroundednessScore
+        expr: groundedness_score < 0.5
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Groundedness score below 0.5 ({{ $value }})"

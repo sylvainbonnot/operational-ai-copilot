@@ -1,0 +1,39 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v3
+        with:
+          version: "0.4.30"
+
+      - name: Set up Python
+        run: uv python install 3.11
+
+      - name: Install dependencies
+        run: uv sync --all-groups
+
+      - name: Lint
+        run: |
+          uv run ruff check app/ tests/
+          uv run ruff format --check app/ tests/
+
+      - name: Type check
+        run: uv run mypy app/
+
+      - name: Test
+        env:
+          OPENAI_API_KEY: "test-key"
+          DATABASE_URL: "postgresql+asyncpg://copilot:copilot@localhost:5432/copilot"
+        run: uv run pytest tests/ -v --no-cov
