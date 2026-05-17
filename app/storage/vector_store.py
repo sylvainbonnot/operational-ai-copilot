@@ -52,9 +52,8 @@ async def upsert_chunks(chunks: list[dict[str, Any]]) -> None:
         embeddings = await embed_texts(texts)
 
         session_factory = get_session_factory()
-        async with session_factory() as session:
-            async with session.begin():
-                for chunk, embedding in zip(batch, embeddings):
+        async with session_factory() as session, session.begin():
+            for chunk, embedding in zip(batch, embeddings, strict=True):
                     await session.execute(
                         text("""
                             INSERT INTO chunks (id, source_type, source_id, machine_id, site, content, metadata, embedding)

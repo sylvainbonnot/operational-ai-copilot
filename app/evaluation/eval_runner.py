@@ -9,7 +9,6 @@ from __future__ import annotations
 
 import argparse
 import asyncio
-import json
 import time
 import uuid
 from datetime import datetime
@@ -24,8 +23,6 @@ from app.evaluation.metrics import (
     compute_pass,
     evidence_hit_rate,
     fact_coverage,
-    mrr,
-    precision_at_k,
     recall_at_k,
     refusal_correct,
 )
@@ -73,7 +70,6 @@ async def run_eval(dataset_path: Path, output_dir: Path) -> EvalReport:
         latency_ms = round((time.perf_counter() - t0) * 1000, 1)
         retrieved_ids = [c.source_id for c in chunks]
 
-        prec = precision_at_k(retrieved_ids, q.expected_evidence_ids)
         rec = recall_at_k(retrieved_ids, q.expected_evidence_ids)
         hit_rate = evidence_hit_rate(retrieved_ids, q.expected_evidence_ids)
         fact_cov = fact_coverage(answer, q.expected_facts)
@@ -160,8 +156,8 @@ def _render_markdown(report: EvalReport) -> str:
         "",
         "## Summary",
         "",
-        f"| Metric | Value |",
-        f"|--------|-------|",
+        "| Metric | Value |",
+        "|--------|-------|",
         f"| Pass rate | {s.pass_rate:.0%} ({s.passed}/{s.total}) |",
         f"| Mean Evidence Hit Rate | {s.mean_retrieval_precision:.2f} |",
         f"| Mean Groundedness | {s.mean_groundedness:.2f} |",
@@ -219,11 +215,11 @@ def _print_summary(summary: EvalSummary, results: list[EvalResult]) -> None:
         ci_failures.append(f"mean_hit_rate {summary.mean_retrieval_precision:.2f} < {THRESHOLD_HIT_RATE}")
 
     if ci_failures:
-        print(f"\n  CI GATE FAILED:")
+        print("\n  CI GATE FAILED:")
         for f in ci_failures:
             print(f"    ✗ {f}")
     else:
-        print(f"\n  CI gate: ✓ all thresholds passed")
+        print("\n  CI gate: ✓ all thresholds passed")
     print()
 
 
