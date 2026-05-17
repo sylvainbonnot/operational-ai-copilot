@@ -28,8 +28,7 @@ async def embed_texts(texts: list[str]) -> list[list[float]]:
         )
         response.raise_for_status()
 
-    data = response.json()
-    # Ollama /api/embed returns {"embeddings": [[...], [...]]}
+    data: dict[str, list[list[float]]] = response.json()
     return data["embeddings"]
 
 
