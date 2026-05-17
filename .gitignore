@@ -40,3 +40,6 @@ eval/reports/*.md
 .idea/
 .vscode/
 *.swp
+
+# Local docs (not for repo)
+docs/
