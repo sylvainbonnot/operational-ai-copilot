@@ -14,7 +14,9 @@ _TRACKED = {"/ask", "/ask/incident/summarize", "/ask/incident/diagnose"}
 
 
 class PrometheusMiddleware(BaseHTTPMiddleware):
-    async def dispatch(self, request: Request, call_next: Callable[[Request], Awaitable[Response]]) -> Response:
+    async def dispatch(
+        self, request: Request, call_next: Callable[[Request], Awaitable[Response]]
+    ) -> Response:
         path = request.url.path
         method = request.method
 
