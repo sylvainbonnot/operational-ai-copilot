@@ -42,7 +42,8 @@ async def init_db() -> None:
     engine = get_engine()
     async with engine.begin() as conn:
         await conn.execute(text("CREATE EXTENSION IF NOT EXISTS vector"))
-        await conn.execute(text("""
+        await conn.execute(
+            text("""
             CREATE TABLE IF NOT EXISTS chunks (
                 id          TEXT PRIMARY KEY,
                 source_type TEXT NOT NULL,
@@ -54,19 +55,27 @@ async def init_db() -> None:
                 embedding   vector(768),
                 created_at  TIMESTAMPTZ NOT NULL DEFAULT now()
             )
-        """))
-        await conn.execute(text("""
+        """)
+        )
+        await conn.execute(
+            text("""
             CREATE INDEX IF NOT EXISTS chunks_embedding_idx
             ON chunks USING ivfflat (embedding vector_cosine_ops)
             WITH (lists = 50)
-        """))
-        await conn.execute(text("""
+        """)
+        )
+        await conn.execute(
+            text("""
             CREATE INDEX IF NOT EXISTS chunks_machine_id_idx ON chunks (machine_id)
-        """))
-        await conn.execute(text("""
+        """)
+        )
+        await conn.execute(
+            text("""
             CREATE INDEX IF NOT EXISTS chunks_source_type_idx ON chunks (source_type)
-        """))
-        await conn.execute(text("""
+        """)
+        )
+        await conn.execute(
+            text("""
             CREATE TABLE IF NOT EXISTS feedback (
                 id              TEXT PRIMARY KEY,
                 question_id     TEXT NOT NULL,
@@ -80,11 +89,16 @@ async def init_db() -> None:
                 promoted        BOOLEAN NOT NULL DEFAULT false,
                 submitted_at    TIMESTAMPTZ NOT NULL DEFAULT now()
             )
-        """))
-        await conn.execute(text("""
+        """)
+        )
+        await conn.execute(
+            text("""
             CREATE INDEX IF NOT EXISTS feedback_rating_idx ON feedback (rating)
-        """))
-        await conn.execute(text("""
+        """)
+        )
+        await conn.execute(
+            text("""
             CREATE INDEX IF NOT EXISTS feedback_promoted_idx ON feedback (promoted)
-        """))
+        """)
+        )
     logger.info("db_init_complete")

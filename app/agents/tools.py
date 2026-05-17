@@ -19,7 +19,9 @@ def _track(tool_name: str) -> None:
     logger.info("tool_call", tool=tool_name)
 
 
-async def tool_retrieve_incidents(machine_id: str | None, query: str, top_k: int = 5) -> list[SourceChunk]:
+async def tool_retrieve_incidents(
+    machine_id: str | None, query: str, top_k: int = 5
+) -> list[SourceChunk]:
     """Retrieve relevant incident tickets."""
     _track("retrieve_incidents")
     filters: dict[str, Any] = {"source_type": "ticket"}
@@ -38,7 +40,9 @@ async def tool_retrieve_manuals(query: str, top_k: int = 5) -> list[SourceChunk]
     return await similarity_search(query, top_k=top_k, filters={"source_type": "manual"})
 
 
-async def tool_retrieve_anomalies(machine_id: str | None, query: str, top_k: int = 3) -> list[SourceChunk]:
+async def tool_retrieve_anomalies(
+    machine_id: str | None, query: str, top_k: int = 3
+) -> list[SourceChunk]:
     """Retrieve anomaly summaries for context."""
     _track("retrieve_anomalies")
     filters: dict[str, Any] = {"source_type": "anomaly_summary"}
@@ -46,7 +50,9 @@ async def tool_retrieve_anomalies(machine_id: str | None, query: str, top_k: int
         filters["machine_id"] = machine_id
     chunks = await similarity_search(query, top_k=top_k, filters=filters)
     if not chunks and machine_id:
-        chunks = await similarity_search(query, top_k=top_k, filters={"source_type": "anomaly_summary"})
+        chunks = await similarity_search(
+            query, top_k=top_k, filters={"source_type": "anomaly_summary"}
+        )
     return chunks
 
 

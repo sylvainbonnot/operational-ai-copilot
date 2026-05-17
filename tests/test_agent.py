@@ -11,6 +11,7 @@ from app.models.api import SourceChunk
 
 # ── Intent classifier ─────────────────────────────────────────────────────────
 
+
 def test_intent_diagnosis() -> None:
     assert classify_intent("Why did compressor_17 fail last month?") == "diagnosis"
 
@@ -20,7 +21,10 @@ def test_intent_summary() -> None:
 
 
 def test_intent_similar_incidents() -> None:
-    assert classify_intent("Which past incidents resemble this vibration pattern?") == "similar_incidents"
+    assert (
+        classify_intent("Which past incidents resemble this vibration pattern?")
+        == "similar_incidents"
+    )
 
 
 def test_intent_maintenance_recommendation() -> None:
@@ -36,6 +40,7 @@ def test_intent_unknown() -> None:
 
 
 # ── /ask route with agent ─────────────────────────────────────────────────────
+
 
 def _make_chunk(source_id: str = "INC-0001") -> SourceChunk:
     return SourceChunk(

@@ -5,6 +5,7 @@ Usage:
     uv run python -m app.ingestion.run_all
     uv run python -m app.ingestion.run_all --data-dir data/synthetic
 """
+
 from __future__ import annotations
 
 import argparse
@@ -29,9 +30,7 @@ async def run(data_dir: Path) -> None:
 
     manifest_path = data_dir / "manifest.json"
     if not manifest_path.exists():
-        raise FileNotFoundError(
-            f"No manifest.json in {data_dir}. Run `make seed-data` first."
-        )
+        raise FileNotFoundError(f"No manifest.json in {data_dir}. Run `make seed-data` first.")
 
     logger.info("ingestion_start", data_dir=str(data_dir))
     t0 = time.perf_counter()

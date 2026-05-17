@@ -5,6 +5,7 @@ Usage:
     uv run python -m app.evaluation.eval_runner
     uv run python -m app.evaluation.eval_runner --dataset eval/golden_questions.jsonl --output eval/reports/
 """
+
 from __future__ import annotations
 
 import argparse
@@ -65,7 +66,9 @@ async def run_eval(dataset_path: Path, output_dir: Path) -> EvalReport:
             logger.error("eval_question_error", id=q.id, error=str(exc))
             answer = ""
             chunks = []
-            generation = type("G", (), {"prompt_tokens": 0, "completion_tokens": 0, "latency_ms": 0.0})()
+            generation = type(
+                "G", (), {"prompt_tokens": 0, "completion_tokens": 0, "latency_ms": 0.0}
+            )()
 
         latency_ms = round((time.perf_counter() - t0) * 1000, 1)
         retrieved_ids = [c.source_id for c in chunks]
@@ -89,7 +92,7 @@ async def run_eval(dataset_path: Path, output_dir: Path) -> EvalReport:
                 question=q.question,
                 answer=answer,
                 sources_retrieved=retrieved_ids,
-                retrieval_precision_at_k=hit_rate,   # store hit_rate in this field for report
+                retrieval_precision_at_k=hit_rate,  # store hit_rate in this field for report
                 retrieval_recall_at_k=rec,
                 groundedness=compute_grounding_score(answer, chunks),
                 latency_ms=latency_ms,
@@ -101,7 +104,9 @@ async def run_eval(dataset_path: Path, output_dir: Path) -> EvalReport:
         )
 
         status = "PASS" if passed else f"FAIL ({failure_reason})"
-        logger.info("eval_result", id=q.id, status=status, hit_rate=hit_rate, recall=rec, fact_cov=fact_cov)
+        logger.info(
+            "eval_result", id=q.id, status=status, hit_rate=hit_rate, recall=rec, fact_cov=fact_cov
+        )
 
     # Aggregate summary
     n = len(results)
@@ -131,8 +136,11 @@ async def run_eval(dataset_path: Path, output_dir: Path) -> EvalReport:
     precision_gauge.set(summary.mean_retrieval_precision)
     n_ungrounded = sum(1 for r in results if r.groundedness < 0.3)
     hallucination_gauge.set(round(n_ungrounded / n, 4) if n else 0.0)
-    logger.info("eval_metrics_pushed", groundedness=summary.mean_groundedness,
-                precision=summary.mean_retrieval_precision)
+    logger.info(
+        "eval_metrics_pushed",
+        groundedness=summary.mean_groundedness,
+        precision=summary.mean_retrieval_precision,
+    )
 
     # Write report
     output_dir.mkdir(parents=True, exist_ok=True)
@@ -193,9 +201,9 @@ def _render_markdown(report: EvalReport) -> str:
 
 
 def _print_summary(summary: EvalSummary, results: list[EvalResult]) -> None:
-    print(f"\n{'='*55}")
+    print(f"\n{'=' * 55}")
     print(f"  Eval complete: {summary.passed}/{summary.total} passed ({summary.pass_rate:.0%})")
-    print(f"{'='*55}")
+    print(f"{'=' * 55}")
     print(f"  Mean Evidence Hit Rate: {summary.mean_retrieval_precision:.3f}")
     print(f"  Mean Groundedness: {summary.mean_groundedness:.3f}")
     print(f"  Mean Latency     : {summary.mean_latency_ms:.0f}ms")
@@ -212,7 +220,9 @@ def _print_summary(summary: EvalSummary, results: list[EvalResult]) -> None:
     if summary.pass_rate < THRESHOLD_PASS_RATE:
         ci_failures.append(f"pass_rate {summary.pass_rate:.0%} < {THRESHOLD_PASS_RATE:.0%}")
     if summary.mean_retrieval_precision < THRESHOLD_HIT_RATE:
-        ci_failures.append(f"mean_hit_rate {summary.mean_retrieval_precision:.2f} < {THRESHOLD_HIT_RATE}")
+        ci_failures.append(
+            f"mean_hit_rate {summary.mean_retrieval_precision:.2f} < {THRESHOLD_HIT_RATE}"
+        )
 
     if ci_failures:
         print("\n  CI GATE FAILED:")

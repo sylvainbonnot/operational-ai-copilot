@@ -23,8 +23,9 @@ async def retrieve(request: AskRequest) -> list[SourceChunk]:
     settings = get_settings()
     top_k = request.top_k or settings.top_k
 
-    extra_filters: dict[str, Any] = {k: v for k, v in request.filters.items()
-                                      if k != "machine_id"} if request.filters else {}
+    extra_filters: dict[str, Any] = (
+        {k: v for k, v in request.filters.items() if k != "machine_id"} if request.filters else {}
+    )
 
     # Always fetch unscoped results (picks up manuals with machine_id=NULL)
     unscoped = await similarity_search(
@@ -52,6 +53,11 @@ async def retrieve(request: AskRequest) -> list[SourceChunk]:
             seen[chunk.chunk_id] = chunk
 
     merged = sorted(seen.values(), key=lambda c: c.score, reverse=True)[:top_k]
-    logger.info("retrieved_chunks", count=len(merged), machine_id=request.machine_id,
-                scoped=len(scoped), unscoped=len(unscoped))
+    logger.info(
+        "retrieved_chunks",
+        count=len(merged),
+        machine_id=request.machine_id,
+        scoped=len(scoped),
+        unscoped=len(unscoped),
+    )
     return merged

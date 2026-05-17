@@ -27,7 +27,9 @@ async def ask(request: AskRequest) -> AskResponse:
     t0 = time.perf_counter()
     answer_id = str(uuid.uuid4())
 
-    logger.info("ask_start", answer_id=answer_id, question=request.question, machine_id=request.machine_id)
+    logger.info(
+        "ask_start", answer_id=answer_id, question=request.question, machine_id=request.machine_id
+    )
 
     try:
         t_retrieval = time.perf_counter()
@@ -67,7 +69,9 @@ async def ask(request: AskRequest) -> AskResponse:
     except Exception as exc:
         rag_requests_total.labels(endpoint="ask", status="error").inc()
         logger.error("ask_error", answer_id=answer_id, error=str(exc))
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(exc)) from exc
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(exc)
+        ) from exc
 
 
 @router.post("/incident/summarize", response_model=dict[str, Any])

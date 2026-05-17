@@ -95,6 +95,7 @@ async def run_agent(request: AskRequest) -> AgentResult:
             # Inject profile as a synthetic chunk if found
             if profile:
                 from app.models.api import SourceChunk
+
                 profile_chunk = SourceChunk(
                     chunk_id=f"profile-{machine_id}",
                     source_type="machine_profile",
@@ -116,6 +117,7 @@ async def run_agent(request: AskRequest) -> AgentResult:
     else:
         # unknown — fall back to broad retrieval across all types
         from app.rag.retriever import retrieve
+
         context_chunks = await retrieve(request)
         tool_calls.append("retrieve_broad")
 
@@ -128,7 +130,7 @@ async def run_agent(request: AskRequest) -> AgentResult:
             deduped.append(chunk)
 
     # Cap total context
-    deduped = deduped[:top_k + 3]
+    deduped = deduped[: top_k + 3]
 
     if not deduped:
         return AgentResult(
@@ -144,7 +146,9 @@ async def run_agent(request: AskRequest) -> AgentResult:
     grounded = is_grounded(generation.answer, deduped)
     confidence = compute_grounding_score(generation.answer, deduped)
 
-    logger.info("agent_complete", intent=intent, tools=tool_calls, chunks=len(deduped), grounded=grounded)
+    logger.info(
+        "agent_complete", intent=intent, tools=tool_calls, chunks=len(deduped), grounded=grounded
+    )
 
     return AgentResult(
         answer=generation.answer,

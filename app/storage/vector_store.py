@@ -54,8 +54,8 @@ async def upsert_chunks(chunks: list[dict[str, Any]]) -> None:
         session_factory = get_session_factory()
         async with session_factory() as session, session.begin():
             for chunk, embedding in zip(batch, embeddings, strict=True):
-                    await session.execute(
-                        text("""
+                await session.execute(
+                    text("""
                             INSERT INTO chunks (id, source_type, source_id, machine_id, site, content, metadata, embedding)
                             VALUES (:id, :source_type, :source_id, :machine_id, :site, :content, cast(:metadata as jsonb), cast(:embedding as vector))
                             ON CONFLICT (id) DO UPDATE SET
@@ -63,17 +63,17 @@ async def upsert_chunks(chunks: list[dict[str, Any]]) -> None:
                                 metadata  = EXCLUDED.metadata,
                                 embedding = EXCLUDED.embedding
                         """),
-                        {
-                            "id": chunk["id"],
-                            "source_type": chunk["source_type"],
-                            "source_id": chunk["source_id"],
-                            "machine_id": chunk.get("machine_id"),
-                            "site": chunk.get("site"),
-                            "content": chunk["content"],
-                            "metadata": json.dumps(chunk.get("metadata", {})),
-                            "embedding": str(embedding),
-                        },
-                    )
+                    {
+                        "id": chunk["id"],
+                        "source_type": chunk["source_type"],
+                        "source_id": chunk["source_id"],
+                        "machine_id": chunk.get("machine_id"),
+                        "site": chunk.get("site"),
+                        "content": chunk["content"],
+                        "metadata": json.dumps(chunk.get("metadata", {})),
+                        "embedding": str(embedding),
+                    },
+                )
 
         logger.info("upserted_batch", offset=i, count=len(batch))
 
@@ -130,7 +130,9 @@ async def similarity_search(
 
     latency = time.perf_counter() - t0
     retrieval_latency_seconds.observe(latency)
-    logger.info("similarity_search", top_k=top_k, results=len(rows), latency_ms=round(latency * 1000, 1))
+    logger.info(
+        "similarity_search", top_k=top_k, results=len(rows), latency_ms=round(latency * 1000, 1)
+    )
 
     return [
         SourceChunk(

@@ -51,7 +51,10 @@ def test_mrr_no_hit() -> None:
 
 
 def test_evidence_hit_rate_all_found() -> None:
-    assert evidence_hit_rate(["MANUAL-COMP-01", "INC-0042", "NOTE-01"], ["MANUAL-COMP-01", "INC-0042"]) == 1.0
+    assert (
+        evidence_hit_rate(["MANUAL-COMP-01", "INC-0042", "NOTE-01"], ["MANUAL-COMP-01", "INC-0042"])
+        == 1.0
+    )
 
 
 def test_evidence_hit_rate_partial() -> None:
@@ -63,7 +66,12 @@ def test_evidence_hit_rate_no_expected() -> None:
 
 
 def test_fact_coverage_all() -> None:
-    assert fact_coverage("The bearing clearance is 0.04-0.08 mm", ["0.04-0.08 mm", "bearing clearance"]) == 1.0
+    assert (
+        fact_coverage(
+            "The bearing clearance is 0.04-0.08 mm", ["0.04-0.08 mm", "bearing clearance"]
+        )
+        == 1.0
+    )
 
 
 def test_fact_coverage_partial() -> None:
@@ -95,8 +103,10 @@ def test_refusal_mismatch_not_expected_but_present() -> None:
 
 def test_compute_pass_all_good() -> None:
     passed, reason = compute_pass(
-        hit_rate=0.8, fact_cov=0.8,
-        refusal_ok=True, expected_refusal=False,
+        hit_rate=0.8,
+        fact_cov=0.8,
+        refusal_ok=True,
+        expected_refusal=False,
     )
     assert passed is True
     assert reason is None
@@ -104,8 +114,10 @@ def test_compute_pass_all_good() -> None:
 
 def test_compute_pass_low_hit_rate() -> None:
     passed, reason = compute_pass(
-        hit_rate=0.1, fact_cov=0.8,
-        refusal_ok=True, expected_refusal=False,
+        hit_rate=0.1,
+        fact_cov=0.8,
+        refusal_ok=True,
+        expected_refusal=False,
     )
     assert passed is False
     assert "evidence_hit_rate" in reason  # type: ignore[operator]
@@ -114,8 +126,10 @@ def test_compute_pass_low_hit_rate() -> None:
 def test_compute_pass_refusal_question() -> None:
     # Refusal questions skip hit_rate/fact checks
     passed, reason = compute_pass(
-        hit_rate=0.0, fact_cov=0.0,
-        refusal_ok=True, expected_refusal=True,
+        hit_rate=0.0,
+        fact_cov=0.0,
+        refusal_ok=True,
+        expected_refusal=True,
     )
     assert passed is True
     assert reason is None

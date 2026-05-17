@@ -28,7 +28,9 @@ async def submit_feedback(item: FeedbackItem) -> dict[str, str]:
 
 @router.get("", response_model=list[dict[str, Any]])
 async def get_feedback(
-    rating: str | None = Query(default=None, description="Filter by rating: correct, incorrect, partial"),
+    rating: str | None = Query(
+        default=None, description="Filter by rating: correct, incorrect, partial"
+    ),
     promoted: bool | None = Query(default=None, description="Filter by promotion status"),
     limit: int = Query(default=50, ge=1, le=500),
 ) -> list[dict[str, Any]]:
@@ -36,7 +38,10 @@ async def get_feedback(
     items = await list_feedback(rating=rating, promoted=promoted, limit=limit)
     # Convert datetime objects for JSON serialisation
     return [
-        {**item, "submitted_at": item["submitted_at"].isoformat() if item.get("submitted_at") else None}
+        {
+            **item,
+            "submitted_at": item["submitted_at"].isoformat() if item.get("submitted_at") else None,
+        }
         for item in items
     ]
 

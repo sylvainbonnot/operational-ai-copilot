@@ -29,12 +29,16 @@ async def test_ask_returns_answer() -> None:
         patch(
             "app.api.routes_ask.generate_answer",
             new_callable=AsyncMock,
-            return_value=type("R", (), {
-                "answer": "Bearing wear was caused by lubrication failure (INC-0001, INC-0002).",
-                "prompt_tokens": 200,
-                "completion_tokens": 50,
-                "latency_ms": 800.0,
-            })(),
+            return_value=type(
+                "R",
+                (),
+                {
+                    "answer": "Bearing wear was caused by lubrication failure (INC-0001, INC-0002).",
+                    "prompt_tokens": 200,
+                    "completion_tokens": 50,
+                    "latency_ms": 800.0,
+                },
+            )(),
         ),
     ):
         async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:

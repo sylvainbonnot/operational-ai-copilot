@@ -18,6 +18,7 @@ async def run_eval(dataset: str = "eval/golden_questions.jsonl") -> dict[str, An
 async def list_reports() -> list[str]:
     """List available evaluation report files."""
     import os
+
     reports_dir = "eval/reports"
     if not os.path.isdir(reports_dir):
         return []
