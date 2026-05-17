@@ -278,6 +278,6 @@ Key choices:
 
 ---
 
-## Recruiter summary
+## Project summary
 
 > Built an operational AI copilot for industrial incident analysis: RAG over maintenance tickets and manuals, intent-driven agentic workflows with 6 intent classes and 5 tools, time-series anomaly context, human-in-the-loop feedback loop, and Prometheus/Grafana observability. CI-gated evaluation suite with 20 golden questions measuring evidence hit rate, groundedness, and latency.
